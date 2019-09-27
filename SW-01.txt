@@ -1,0 +1,50 @@
+enable
+configure terminal
+hostname SW-1
+banner motd "ACESSO APENAS PARA PESSOAS AUTORIZADAS "
+enable secret SenhadaEnable
+service password-encryption
+ip domain-name rede1.local
+crypto key generate rsa general-keys modulus 1024
+username vinicius privilege 15 secret vini123
+line console 0
+password SenhadaConsole
+login
+exit
+line vty 0 15
+transport input ssh
+exec-timeout 5
+login local
+exit
+vlan 10
+name PC-11 PC-13
+exit
+vlan 20
+name PC-12 PC-14
+exit
+vlan 100
+name Equipamentos
+exit
+interface f0/1
+switchport mode access
+switchport access vlan 20
+description  PC-12 PC-14
+exit
+interface f0/2
+switchport mode access
+switchport access vlan 10
+description  PC-11 PC-13
+exit
+interface g0/1
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 10,20,100,99
+no shutdown
+exit
+interface vlan 100
+ip address 172.16.1.141 255.255.255.240
+description interface de gerenciamento
+no shutdown
+exit
+ip default-gateway 172.16.1.129
+do wr
